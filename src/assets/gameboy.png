@@ -1,0 +1,9 @@
+<svg width="300" height="400" xmlns="http://www.w3.org/2000/svg">
+  <rect x="0" y="0" width="300" height="400" rx="20" fill="#A8A8A8" />
+  <rect x="20" y="20" width="260" height="360" rx="10" fill="#000" />
+  <rect x="40" y="40" width="220" height="280" fill="#FFF" />
+  <circle cx="80" cy="300" r="10" fill="#FF0000" />
+  <circle cx="220" cy="300" r="10" fill="#00FF00" />
+  <rect x="40" y="100" width="220" height="160" fill="#000" />
+  <text x="150" y="200" font-size="24" text-anchor="middle" fill="#FFF">DUEL GAME</text>
+</svg>
