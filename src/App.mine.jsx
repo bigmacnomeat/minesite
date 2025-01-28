@@ -2,6 +2,10 @@ import React, { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import confetti from 'canvas-confetti';
 import LotterySystem from './components/LotterySystem';
+import VotingSystem from './components/VotingSystem';
+import AdminLogin from './components/AdminLogin';
+import AdminDashboard from './components/AdminDashboard';
+import EnchantedRealm from './components/EnchantedRealm';
 import { Routes, Route, useNavigate } from 'react-router-dom';
 
 function App() {
@@ -22,6 +26,8 @@ function App() {
     { name: 'Roadmap', href: '#roadmap' },
     { name: 'Ecosystem', href: '#ecosystem' },
     { name: 'Lottery', href: '#lottery' },
+    { name: 'Vote', href: '/vote' },
+    { name: 'Enchanted Realm', href: '/enchanted-realm' },
     { name: 'Buy Now', href: 'https://jup.ag/swap/USDC-GaHu73uhhWrcGLF3CWUi26ZBzv5mZAy8PLrvzoM5XMZh', isExternal: true },
   ];
 
@@ -488,6 +494,29 @@ function App() {
               </div>
             </section>
 
+            {/* Vote Section */}
+            <section id="vote" className="py-32 w-full bg-gray-900">
+              <div className="container mx-auto px-4">
+                <h2 className="text-4xl font-bold text-center mb-12">Voting System</h2>
+                <VotingSystem />
+              </div>
+            </section>
+
+            {/* Enchanted Realm Section */}
+            <section id="enchanted-realm" className="py-32 w-full bg-gray-900">
+              <div className="container mx-auto px-4">
+                <h2 className="text-4xl font-bold text-center mb-12">The Enchanted Realm</h2>
+                <div className="text-center mb-8">
+                  <button
+                    onClick={() => navigate('/enchanted-realm')}
+                    className="bg-mine-green/20 hover:bg-mine-green/30 text-mine-crystal px-8 py-4 rounded-lg text-xl transition-colors"
+                  >
+                    Enter the Realm
+                  </button>
+                </div>
+              </div>
+            </section>
+
             {/* Buy Now Section */}
             <section id="buy" className="py-32 w-full">
               <div className="max-w-7xl mx-auto px-4 sm:px-6">
@@ -523,6 +552,10 @@ function App() {
             </footer>
           </div>
         } />
+        <Route path="/vote" element={<VotingSystem />} />
+        <Route path="/admin" element={<AdminLogin />} />
+        <Route path="/admin/dashboard" element={<AdminDashboard />} />
+        <Route path="/enchanted-realm" element={<EnchantedRealm />} />
       </Routes>
     </>
   );
