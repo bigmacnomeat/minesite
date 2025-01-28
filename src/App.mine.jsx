@@ -27,7 +27,7 @@ function App() {
     { name: 'Ecosystem', href: '#ecosystem' },
     { name: 'Lottery', href: '#lottery' },
     { name: 'Vote', href: '/vote' },
-    { name: 'Game', href: '#game' },
+    { name: 'Enchanted Realm', href: '#enchanted-realm' },
     { name: 'Buy Now', href: 'https://jup.ag/swap/USDC-GaHu73uhhWrcGLF3CWUi26ZBzv5mZAy8PLrvzoM5XMZh', isExternal: true },
   ];
 
@@ -502,8 +502,8 @@ function App() {
               </div>
             </section>
 
-            {/* Game Section */}
-            <section id="game" className="py-32 w-full bg-gray-900">
+            {/* Enchanted Realm Section */}
+            <section id="enchanted-realm" className="py-32 w-full bg-gray-900">
               <div className="container mx-auto px-4">
                 <h2 className="text-4xl font-bold text-center mb-12">The Enchanted Realm</h2>
                 <EnchantedRealm />
