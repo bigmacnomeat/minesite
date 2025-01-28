@@ -4,7 +4,9 @@ import { ref, onValue, set, get } from 'firebase/database';
 
 const EnchantedRealm = () => {
   const [wallet, setWallet] = useState('');
+  const [password, setPassword] = useState('');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [command, setCommand] = useState('');
   const [gameState, setGameState] = useState({
     level: 1,
     score: 0,
@@ -15,26 +17,28 @@ const EnchantedRealm = () => {
     lastSaved: null
   });
   const [error, setError] = useState('');
+  const [message, setMessage] = useState('');
 
-  // Load saved game state when wallet is entered
+  // Load saved game state when logged in
   useEffect(() => {
     if (isLoggedIn && wallet) {
       const gameStateRef = ref(realtimeDb, `gameStates/${wallet}`);
       const unsubscribe = onValue(gameStateRef, (snapshot) => {
         const data = snapshot.val();
-        if (data) {
-          setGameState(data);
+        if (data && data.password === password) {
+          const { password: _, ...gameData } = data;
+          setGameState(gameData);
         }
       });
 
       return () => unsubscribe();
     }
-  }, [isLoggedIn, wallet]);
+  }, [isLoggedIn, wallet, password]);
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    if (!wallet) {
-      setError('Please enter your wallet address');
+    if (!wallet || !password) {
+      setError('Please enter both wallet address and password');
       return;
     }
 
@@ -45,7 +49,13 @@ const EnchantedRealm = () => {
       const savedState = snapshot.val();
 
       if (savedState) {
-        setGameState(savedState);
+        // Verify password
+        if (savedState.password !== password) {
+          setError('Incorrect password');
+          return;
+        }
+        const { password: _, ...gameData } = savedState;
+        setGameState(gameData);
       } else {
         // Initialize new game state
         const newGameState = {
@@ -55,29 +65,46 @@ const EnchantedRealm = () => {
           position: { x: 0, y: 0 },
           health: 100,
           mana: 100,
-          lastSaved: Date.now()
+          lastSaved: Date.now(),
+          password
         };
         await set(gameStateRef, newGameState);
-        setGameState(newGameState);
+        const { password: _, ...gameData } = newGameState;
+        setGameState(gameData);
       }
 
       setIsLoggedIn(true);
       setError('');
+      setMessage('Game loaded successfully!');
     } catch (error) {
       setError('Failed to load game: ' + error.message);
     }
   };
 
-  const saveGameState = async (newState) => {
+  const saveGameState = async () => {
     try {
       const gameStateRef = ref(realtimeDb, `gameStates/${wallet}`);
       await set(gameStateRef, {
-        ...newState,
+        ...gameState,
+        password,
         lastSaved: Date.now()
       });
+      setMessage('Game saved successfully!');
+      setTimeout(() => setMessage(''), 3000);
     } catch (error) {
       setError('Failed to save game: ' + error.message);
     }
+  };
+
+  const handleCommand = async (e) => {
+    e.preventDefault();
+    const cmd = command.toLowerCase().trim();
+    
+    if (cmd === '/save') {
+      await saveGameState();
+    }
+    
+    setCommand('');
   };
 
   // Example game actions
@@ -105,7 +132,6 @@ const EnchantedRealm = () => {
       position: newPosition
     };
     setGameState(newGameState);
-    saveGameState(newGameState);
   };
 
   const collectItem = (item) => {
@@ -115,7 +141,6 @@ const EnchantedRealm = () => {
       score: gameState.score + 10
     };
     setGameState(newGameState);
-    saveGameState(newGameState);
   };
 
   if (!isLoggedIn) {
@@ -128,13 +153,20 @@ const EnchantedRealm = () => {
               {error}
             </div>
           )}
-          <form onSubmit={handleLogin}>
+          <form onSubmit={handleLogin} className="space-y-4">
             <input
               type="text"
               value={wallet}
               onChange={(e) => setWallet(e.target.value)}
               placeholder="Enter your wallet address"
-              className="w-full bg-gray-700 rounded px-4 py-2 text-white mb-4"
+              className="w-full bg-gray-700 rounded px-4 py-2 text-white"
+            />
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Enter your password"
+              className="w-full bg-gray-700 rounded px-4 py-2 text-white"
             />
             <button
               type="submit"
@@ -151,6 +183,17 @@ const EnchantedRealm = () => {
   return (
     <div className="min-h-screen bg-gray-900 p-8">
       <div className="max-w-4xl mx-auto">
+        {message && (
+          <div className="bg-green-500/20 text-green-300 p-4 rounded mb-4 text-center">
+            {message}
+          </div>
+        )}
+        {error && (
+          <div className="bg-red-500/20 text-red-300 p-4 rounded mb-4 text-center">
+            {error}
+          </div>
+        )}
+
         {/* Game Stats */}
         <div className="bg-gray-800 rounded-xl p-6 mb-8">
           <div className="grid grid-cols-4 gap-4">
@@ -170,6 +213,22 @@ const EnchantedRealm = () => {
               <div className="text-xl font-bold text-mine-crystal">Mana</div>
               <div className="text-2xl text-blue-400">{gameState.mana}</div>
             </div>
+          </div>
+        </div>
+
+        {/* Command Input */}
+        <div className="bg-gray-800 rounded-xl p-6 mb-8">
+          <form onSubmit={handleCommand}>
+            <input
+              type="text"
+              value={command}
+              onChange={(e) => setCommand(e.target.value)}
+              placeholder="Type /save to save your game"
+              className="w-full bg-gray-700 rounded px-4 py-2 text-white"
+            />
+          </form>
+          <div className="text-gray-400 text-sm mt-2">
+            Available commands: /save
           </div>
         </div>
 
@@ -221,12 +280,6 @@ const EnchantedRealm = () => {
             Collect Potion
           </button>
         </div>
-
-        {error && (
-          <div className="bg-red-500/20 text-red-300 p-4 rounded mt-4">
-            {error}
-          </div>
-        )}
       </div>
     </div>
   );
