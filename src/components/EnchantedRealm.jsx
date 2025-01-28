@@ -7,15 +7,7 @@ const EnchantedRealm = () => {
   const [password, setPassword] = useState('');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [command, setCommand] = useState('');
-  const [gameState, setGameState] = useState({
-    level: 1,
-    score: 0,
-    inventory: [],
-    position: { x: 0, y: 0 },
-    health: 100,
-    mana: 100,
-    lastSaved: null
-  });
+  const [gameState, setGameState] = useState(null);
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
 
@@ -109,6 +101,8 @@ const EnchantedRealm = () => {
 
   // Example game actions
   const movePlayer = (direction) => {
+    if (!gameState) return;
+    
     const newPosition = { ...gameState.position };
     switch (direction) {
       case 'up':
@@ -127,23 +121,23 @@ const EnchantedRealm = () => {
         break;
     }
 
-    const newGameState = {
+    setGameState({
       ...gameState,
       position: newPosition
-    };
-    setGameState(newGameState);
+    });
   };
 
   const collectItem = (item) => {
-    const newGameState = {
+    if (!gameState) return;
+    
+    setGameState({
       ...gameState,
       inventory: [...gameState.inventory, item],
       score: gameState.score + 10
-    };
-    setGameState(newGameState);
+    });
   };
 
-  if (!isLoggedIn) {
+  if (!isLoggedIn || !gameState) {
     return (
       <div className="min-h-screen bg-gray-900 flex items-center justify-center">
         <div className="bg-gray-800 p-8 rounded-xl shadow-lg w-96">
