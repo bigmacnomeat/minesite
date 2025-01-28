@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { realtimeDb } from '../firebase';
 import { ref, onValue, set, get } from 'firebase/database';
 
@@ -10,6 +10,14 @@ const EnchantedRealm = () => {
   const [gameState, setGameState] = useState(null);
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
+  const [loginStep, setLoginStep] = useState('wallet'); // 'wallet' or 'password'
+  const inputRef = useRef(null);
+
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [loginStep, isLoggedIn]);
 
   // Load saved game state when logged in
   useEffect(() => {
@@ -27,24 +35,23 @@ const EnchantedRealm = () => {
     }
   }, [isLoggedIn, wallet, password]);
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    if (!wallet || !password) {
+  const handleLogin = async (inputWallet, inputPassword) => {
+    if (!inputWallet || !inputPassword) {
       setError('Please enter both wallet address and password');
       return;
     }
 
     try {
       // Check if there's a saved game state
-      const gameStateRef = ref(realtimeDb, `gameStates/${wallet}`);
+      const gameStateRef = ref(realtimeDb, `gameStates/${inputWallet}`);
       const snapshot = await get(gameStateRef);
       const savedState = snapshot.val();
 
       if (savedState) {
         // Verify password
-        if (savedState.password !== password) {
+        if (savedState.password !== inputPassword) {
           setError('Incorrect password');
-          return;
+          return false;
         }
         const { password: _, ...gameData } = savedState;
         setGameState(gameData);
@@ -58,18 +65,22 @@ const EnchantedRealm = () => {
           health: 100,
           mana: 100,
           lastSaved: Date.now(),
-          password
+          password: inputPassword
         };
         await set(gameStateRef, newGameState);
         const { password: _, ...gameData } = newGameState;
         setGameState(gameData);
       }
 
+      setWallet(inputWallet);
+      setPassword(inputPassword);
       setIsLoggedIn(true);
       setError('');
       setMessage('Game loaded successfully!');
+      return true;
     } catch (error) {
       setError('Failed to load game: ' + error.message);
+      return false;
     }
   };
 
@@ -92,8 +103,26 @@ const EnchantedRealm = () => {
     e.preventDefault();
     const cmd = command.toLowerCase().trim();
     
-    if (cmd === '/save') {
+    if (!isLoggedIn) {
+      if (loginStep === 'wallet') {
+        setWallet(cmd);
+        setLoginStep('password');
+        setCommand('');
+        return;
+      } else if (loginStep === 'password') {
+        const success = await handleLogin(wallet, cmd);
+        if (success) {
+          setLoginStep('wallet');
+        }
+        setCommand('');
+        return;
+      }
+    }
+
+    if (cmd.includes('save')) {
       await saveGameState();
+    } else {
+      // Handle other game commands here
     }
     
     setCommand('');
@@ -137,48 +166,15 @@ const EnchantedRealm = () => {
     });
   };
 
-  if (!isLoggedIn || !gameState) {
-    return (
-      <div className="flex items-center justify-center py-12">
-        <div className="bg-gray-800 p-8 rounded-xl shadow-lg w-96">
-          <h2 className="text-2xl font-bold text-mine-crystal mb-6 text-center">Enter The Enchanted Realm</h2>
-          {error && (
-            <div className="bg-red-500/20 text-red-300 p-3 rounded mb-4 text-center">
-              {error}
-            </div>
-          )}
-          <form onSubmit={handleLogin} className="space-y-4">
-            <div>
-              <label className="block text-mine-crystal mb-2">Wallet Address</label>
-              <input
-                type="text"
-                value={wallet}
-                onChange={(e) => setWallet(e.target.value)}
-                placeholder="Enter your wallet address"
-                className="w-full bg-gray-700 rounded px-4 py-2 text-white"
-              />
-            </div>
-            <div>
-              <label className="block text-mine-crystal mb-2">Password</label>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Enter your password"
-                className="w-full bg-gray-700 rounded px-4 py-2 text-white"
-              />
-            </div>
-            <button
-              type="submit"
-              className="w-full bg-mine-green/20 hover:bg-mine-green/30 text-mine-crystal rounded px-4 py-2 transition-colors"
-            >
-              Enter Realm
-            </button>
-          </form>
-        </div>
-      </div>
-    );
-  }
+  const getPrompt = () => {
+    if (!isLoggedIn) {
+      if (loginStep === 'wallet') {
+        return 'Enter your wallet address:';
+      }
+      return 'Enter your password:';
+    }
+    return 'Enter command (type "save" at any time to save your game):';
+  };
 
   return (
     <div className="py-8">
@@ -194,92 +190,95 @@ const EnchantedRealm = () => {
           </div>
         )}
 
-        {/* Game Stats */}
-        <div className="bg-gray-800 rounded-xl p-6 mb-8">
-          <div className="grid grid-cols-4 gap-4">
-            <div className="text-center">
-              <div className="text-xl font-bold text-mine-crystal">Level</div>
-              <div className="text-2xl text-white">{gameState.level}</div>
-            </div>
-            <div className="text-center">
-              <div className="text-xl font-bold text-mine-crystal">Score</div>
-              <div className="text-2xl text-white">{gameState.score}</div>
-            </div>
-            <div className="text-center">
-              <div className="text-xl font-bold text-mine-crystal">Health</div>
-              <div className="text-2xl text-green-400">{gameState.health}</div>
-            </div>
-            <div className="text-center">
-              <div className="text-xl font-bold text-mine-crystal">Mana</div>
-              <div className="text-2xl text-blue-400">{gameState.mana}</div>
-            </div>
-          </div>
-        </div>
-
         {/* Command Input */}
         <div className="bg-gray-800 rounded-xl p-6 mb-8">
           <form onSubmit={handleCommand}>
+            <div className="font-mono text-mine-crystal mb-2">{getPrompt()}</div>
             <input
-              type="text"
+              ref={inputRef}
+              type={loginStep === 'password' && !isLoggedIn ? 'password' : 'text'}
               value={command}
               onChange={(e) => setCommand(e.target.value)}
-              placeholder="Type /save to save your game"
-              className="w-full bg-gray-700 rounded px-4 py-2 text-white"
+              className="w-full bg-gray-700 rounded px-4 py-2 text-white font-mono"
+              autoFocus
             />
           </form>
-          <div className="text-gray-400 text-sm mt-2">
-            Available commands: /save
-          </div>
         </div>
 
-        {/* Game Controls */}
-        <div className="bg-gray-800 rounded-xl p-6 mb-8">
-          <div className="grid grid-cols-3 gap-4 max-w-xs mx-auto">
-            <button
-              onClick={() => movePlayer('up')}
-              className="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded col-start-2"
-            >
-              ↑
-            </button>
-            <button
-              onClick={() => movePlayer('left')}
-              className="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded"
-            >
-              ←
-            </button>
-            <button
-              onClick={() => movePlayer('down')}
-              className="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded"
-            >
-              ↓
-            </button>
-            <button
-              onClick={() => movePlayer('right')}
-              className="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded"
-            >
-              →
-            </button>
-          </div>
-        </div>
-
-        {/* Inventory */}
-        <div className="bg-gray-800 rounded-xl p-6">
-          <h3 className="text-xl font-bold text-mine-crystal mb-4">Inventory</h3>
-          <div className="grid grid-cols-4 gap-4">
-            {gameState.inventory.map((item, index) => (
-              <div key={index} className="bg-gray-700 p-2 rounded text-center text-white">
-                {item}
+        {isLoggedIn && gameState && (
+          <>
+            {/* Game Stats */}
+            <div className="bg-gray-800 rounded-xl p-6 mb-8">
+              <div className="grid grid-cols-4 gap-4">
+                <div className="text-center">
+                  <div className="text-xl font-bold text-mine-crystal">Level</div>
+                  <div className="text-2xl text-white">{gameState.level}</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-xl font-bold text-mine-crystal">Score</div>
+                  <div className="text-2xl text-white">{gameState.score}</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-xl font-bold text-mine-crystal">Health</div>
+                  <div className="text-2xl text-green-400">{gameState.health}</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-xl font-bold text-mine-crystal">Mana</div>
+                  <div className="text-2xl text-blue-400">{gameState.mana}</div>
+                </div>
               </div>
-            ))}
-          </div>
-          {/* Example item collection button */}
-          <button
-            onClick={() => collectItem('Potion')}
-            className="mt-4 bg-mine-green/20 hover:bg-mine-green/30 text-mine-crystal px-4 py-2 rounded"
-          >
-            Collect Potion
-          </button>
-        </div>
+            </div>
+
+            {/* Game Controls */}
+            <div className="bg-gray-800 rounded-xl p-6 mb-8">
+              <div className="grid grid-cols-3 gap-4 max-w-xs mx-auto">
+                <button
+                  onClick={() => movePlayer('up')}
+                  className="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded col-start-2"
+                >
+                  ↑
+                </button>
+                <button
+                  onClick={() => movePlayer('left')}
+                  className="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded"
+                >
+                  ←
+                </button>
+                <button
+                  onClick={() => movePlayer('down')}
+                  className="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded"
+                >
+                  ↓
+                </button>
+                <button
+                  onClick={() => movePlayer('right')}
+                  className="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded"
+                >
+                  →
+                </button>
+              </div>
+            </div>
+
+            {/* Inventory */}
+            <div className="bg-gray-800 rounded-xl p-6">
+              <h3 className="text-xl font-bold text-mine-crystal mb-4">Inventory</h3>
+              <div className="grid grid-cols-4 gap-4">
+                {gameState.inventory.map((item, index) => (
+                  <div key={index} className="bg-gray-700 p-2 rounded text-center text-white">
+                    {item}
+                  </div>
+                ))}
+              </div>
+              {/* Example item collection button */}
+              <button
+                onClick={() => collectItem('Potion')}
+                className="mt-4 bg-mine-green/20 hover:bg-mine-green/30 text-mine-crystal px-4 py-2 rounded"
+              >
+                Collect Potion
+              </button>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
