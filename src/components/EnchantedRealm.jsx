@@ -139,7 +139,7 @@ const EnchantedRealm = () => {
 
   if (!isLoggedIn || !gameState) {
     return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+      <div className="flex items-center justify-center py-12">
         <div className="bg-gray-800 p-8 rounded-xl shadow-lg w-96">
           <h2 className="text-2xl font-bold text-mine-crystal mb-6 text-center">Enter The Enchanted Realm</h2>
           {error && (
@@ -148,20 +148,26 @@ const EnchantedRealm = () => {
             </div>
           )}
           <form onSubmit={handleLogin} className="space-y-4">
-            <input
-              type="text"
-              value={wallet}
-              onChange={(e) => setWallet(e.target.value)}
-              placeholder="Enter your wallet address"
-              className="w-full bg-gray-700 rounded px-4 py-2 text-white"
-            />
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Enter your password"
-              className="w-full bg-gray-700 rounded px-4 py-2 text-white"
-            />
+            <div>
+              <label className="block text-mine-crystal mb-2">Wallet Address</label>
+              <input
+                type="text"
+                value={wallet}
+                onChange={(e) => setWallet(e.target.value)}
+                placeholder="Enter your wallet address"
+                className="w-full bg-gray-700 rounded px-4 py-2 text-white"
+              />
+            </div>
+            <div>
+              <label className="block text-mine-crystal mb-2">Password</label>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Enter your password"
+                className="w-full bg-gray-700 rounded px-4 py-2 text-white"
+              />
+            </div>
             <button
               type="submit"
               className="w-full bg-mine-green/20 hover:bg-mine-green/30 text-mine-crystal rounded px-4 py-2 transition-colors"
@@ -175,7 +181,7 @@ const EnchantedRealm = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 p-8">
+    <div className="py-8">
       <div className="max-w-4xl mx-auto">
         {message && (
           <div className="bg-green-500/20 text-green-300 p-4 rounded mb-4 text-center">
