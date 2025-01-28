@@ -22,6 +22,7 @@ const EnchantedRealm = () => {
     setLoginStep('wallet');
     setError('');
     setMessage('');
+    setCommand('');
   }, []);
 
   useEffect(() => {
@@ -49,7 +50,7 @@ const EnchantedRealm = () => {
   const handleLogin = async (inputWallet, inputPassword) => {
     if (!inputWallet || !inputPassword) {
       setError('Please enter both wallet address and password');
-      return;
+      return false;
     }
 
     try {
@@ -116,11 +117,20 @@ const EnchantedRealm = () => {
     
     if (!isLoggedIn) {
       if (loginStep === 'wallet') {
+        if (!cmd) {
+          setError('Please enter your wallet address');
+          return;
+        }
         setWallet(cmd);
         setLoginStep('password');
         setCommand('');
+        setError('');
         return;
       } else if (loginStep === 'password') {
+        if (!cmd) {
+          setError('Please enter your password');
+          return;
+        }
         const success = await handleLogin(wallet, cmd);
         if (success) {
           setLoginStep('wallet');
@@ -139,52 +149,14 @@ const EnchantedRealm = () => {
     setCommand('');
   };
 
-  // Example game actions
-  const movePlayer = (direction) => {
-    if (!gameState) return;
-    
-    const newPosition = { ...gameState.position };
-    switch (direction) {
-      case 'up':
-        newPosition.y -= 1;
-        break;
-      case 'down':
-        newPosition.y += 1;
-        break;
-      case 'left':
-        newPosition.x -= 1;
-        break;
-      case 'right':
-        newPosition.x += 1;
-        break;
-      default:
-        break;
-    }
-
-    setGameState({
-      ...gameState,
-      position: newPosition
-    });
-  };
-
-  const collectItem = (item) => {
-    if (!gameState) return;
-    
-    setGameState({
-      ...gameState,
-      inventory: [...gameState.inventory, item],
-      score: gameState.score + 10
-    });
-  };
-
   const getPrompt = () => {
     if (!isLoggedIn) {
       if (loginStep === 'wallet') {
-        return 'Enter your wallet address:';
+        return '> Enter your wallet address:';
       }
-      return 'Enter your password:';
+      return '> Enter your password:';
     }
-    return 'Enter command (type "save" at any time to save your game):';
+    return '> Enter command (type "save" at any time to save your game):';
   };
 
   return (
