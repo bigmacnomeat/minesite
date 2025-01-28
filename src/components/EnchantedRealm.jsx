@@ -13,6 +13,17 @@ const EnchantedRealm = () => {
   const [loginStep, setLoginStep] = useState('wallet'); // 'wallet' or 'password'
   const inputRef = useRef(null);
 
+  // Reset login state when component mounts
+  useEffect(() => {
+    setIsLoggedIn(false);
+    setGameState(null);
+    setWallet('');
+    setPassword('');
+    setLoginStep('wallet');
+    setError('');
+    setMessage('');
+  }, []);
+
   useEffect(() => {
     if (inputRef.current) {
       inputRef.current.focus();
