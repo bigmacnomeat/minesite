@@ -280,6 +280,11 @@ function App() {
                     link="https://raffles.frenslabs.io/"
                   />
                   <FeatureCard
+                    title="Community Events"
+                    description="Join our vibrant community events and earn rewards. Connect with fellow miners and participate in exciting activities!"
+                    icon="🎯"
+                  />
+                  <FeatureCard
                     title="Art & Collectibles"
                     description="Unlock exclusive art upgrades and rare 1/1 pieces. Transform your NFTs into unique masterpieces with $MINE."
                     icon="🎨"

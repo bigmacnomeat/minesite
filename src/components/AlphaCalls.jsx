@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { realtimeDb } from '../firebase';
+import { ref, onValue, push, update, remove, set } from 'firebase/database';
 
 const AlphaCalls = () => {
   const [calls, setCalls] = useState([]);
@@ -11,38 +13,86 @@ const AlphaCalls = () => {
     targetPrice: '',
     timeframe: '24h'
   });
+  const [testStatus, setTestStatus] = useState('');
 
-  // Load calls from localStorage
-  useEffect(() => {
-    const savedCalls = localStorage.getItem('alphaCalls');
-    if (savedCalls) {
-      setCalls(JSON.parse(savedCalls));
+  // Test Firebase connection
+  const testFirebaseConnection = async () => {
+    try {
+      setTestStatus('Testing connection...');
+      const testRef = ref(realtimeDb, 'alphaCalls/test');
+      const testCall = {
+        description: 'Test Call - Please ignore',
+        wallet: 'test-wallet',
+        tokenMint: 'TEST123',
+        currentPrice: '1.0',
+        targetPrice: '2.0',
+        timeframe: '24h',
+        status: 'test',
+        upvotes: 0,
+        downvotes: 0,
+        timestamp: Date.now(),
+        expiryDate: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
+      };
+      
+      await set(testRef, testCall);
+      setTestStatus('Test successful! Check the calls list.');
+      
+      // Remove test call after 5 seconds
+      setTimeout(async () => {
+        await remove(testRef);
+        setTestStatus('Test call removed.');
+      }, 5000);
+    } catch (error) {
+      setTestStatus(`Error: ${error.message}`);
+      console.error('Firebase test error:', error);
     }
+  };
+
+  // Load and listen to calls from Firebase
+  useEffect(() => {
+    const callsRef = ref(realtimeDb, 'alphaCalls');
+    
+    // Set up real-time listener
+    const unsubscribe = onValue(callsRef, (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        // Convert object to array and sort by timestamp
+        const callsArray = Object.entries(data).map(([key, value]) => ({
+          id: key,
+          ...value
+        }));
+        setCalls(callsArray.sort((a, b) => b.timestamp - a.timestamp));
+      } else {
+        setCalls([]);
+      }
+    });
+
+    // Cleanup listener on unmount
+    return () => unsubscribe();
   }, []);
 
-  // Save calls to localStorage
-  useEffect(() => {
-    localStorage.setItem('alphaCalls', JSON.stringify(calls));
-  }, [calls]);
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
     const call = {
-      id: Date.now(),
       tokenMint: newCall.tokenMint,
       description: newCall.description,
       wallet: newCall.wallet,
       currentPrice: parseFloat(newCall.currentPrice),
       targetPrice: parseFloat(newCall.targetPrice),
       timeframe: newCall.timeframe,
-      expiryDate: new Date(Date.now() + getTimeframeMs(newCall.timeframe)),
+      expiryDate: new Date(Date.now() + getTimeframeMs(newCall.timeframe)).toISOString(),
       status: 'pending',
       upvotes: 0,
-      downvotes: 0
+      downvotes: 0,
+      timestamp: Date.now()
     };
     
-    setCalls(prevCalls => [...prevCalls, call]);
+    // Add to Firebase
+    const callsRef = ref(realtimeDb, 'alphaCalls');
+    await push(callsRef, call);
+    
+    // Reset form
     setNewCall({
       description: '',
       wallet: '',
@@ -53,21 +103,20 @@ const AlphaCalls = () => {
     });
   };
 
-  const handleVote = (id, voteType) => {
-    setCalls(calls.map(call => {
-      if (call.id === id) {
-        if (voteType === 'up') {
-          return { ...call, upvotes: call.upvotes + 1 };
-        } else {
-          const newDownvotes = call.downvotes + 1;
-          if (newDownvotes >= 3) {
-            return null; // Remove call
-          }
-          return { ...call, downvotes: newDownvotes };
-        }
-      }
-      return call;
-    }).filter(Boolean));
+  const handleVote = async (callId, voteType) => {
+    const callRef = ref(realtimeDb, `alphaCalls/${callId}`);
+    const call = calls.find(c => c.id === callId);
+    if (call) {
+      const updates = {
+        [voteType]: call[voteType] + 1
+      };
+      await update(callRef, updates);
+    }
+  };
+
+  const handleDelete = async (callId) => {
+    const callRef = ref(realtimeDb, `alphaCalls/${callId}`);
+    await remove(callRef);
   };
 
   const getTimeframeMs = (timeframe) => {
@@ -99,9 +148,25 @@ const AlphaCalls = () => {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <div className="bg-gray-800 rounded-xl p-6">
+      <div className="mb-8 flex justify-between items-center">
         <h2 className="text-3xl font-bold text-white mb-8">Alpha Calls</h2>
-        
+        <button
+          onClick={testFirebaseConnection}
+          className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition duration-300"
+        >
+          Test Connection
+        </button>
+      </div>
+      
+      {testStatus && (
+        <div className={`mb-4 p-4 rounded-lg ${
+          testStatus.includes('Error') ? 'bg-red-500/20 text-red-300' : 'bg-green-500/20 text-green-300'
+        }`}>
+          {testStatus}
+        </div>
+      )}
+
+      <div className="bg-gray-800 rounded-xl p-6">
         {/* Submit new call */}
         <form onSubmit={handleSubmit} className="mb-8">
           <div className="space-y-4">
@@ -231,13 +296,13 @@ const AlphaCalls = () => {
               <div className="flex justify-between items-center mt-4">
                 <div className="flex space-x-4">
                   <button
-                    onClick={() => handleVote(call.id, 'up')}
+                    onClick={() => handleVote(call.id, 'upvotes')}
                     className="flex items-center space-x-1 text-gray-300 hover:text-green-500"
                   >
                     <span>👍 {call.upvotes}</span>
                   </button>
                   <button
-                    onClick={() => handleVote(call.id, 'down')}
+                    onClick={() => handleVote(call.id, 'downvotes')}
                     className="flex items-center space-x-1 text-gray-300 hover:text-red-500"
                   >
                     <span>👎 {call.downvotes}</span>
