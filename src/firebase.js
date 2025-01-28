@@ -1,8 +1,10 @@
+// Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-import { getFirestore } from "firebase/firestore";
 import { getDatabase } from "firebase/database";
 
+// Your web app's Firebase configuration
+// These credentials are safe to be in the client because Firebase Security Rules
+// will prevent unauthorized direct database access
 const firebaseConfig = {
   apiKey: "AIzaSyDwWM-qEpVgeEX2_s3yYJIDeRCV_h88KyE",
   authDomain: "alpha-calls.firebaseapp.com",
@@ -14,9 +16,8 @@ const firebaseConfig = {
   measurementId: "G-1G8FN187H7"
 };
 
+// Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
-const db = getFirestore(app);
 const realtimeDb = getDatabase(app);
 
-export { db, realtimeDb, analytics };
+export { realtimeDb };

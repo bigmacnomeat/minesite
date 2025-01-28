@@ -256,7 +256,7 @@ function App() {
               <div className="max-w-7xl mx-auto px-4 sm:px-6">
                 <div className="text-center mb-16">
                   <h2 className="text-5xl font-bold text-mine-green mb-6">About $MINE</h2>
-                  <p className="text-2xl text-gray-300 mb-12">
+                  <p className="text-2xl text-gray-300">
                     The ultimate gaming and utility token in the magical mining realm
                   </p>
                 </div>
