@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import { realtimeDb } from '../firebase';
-import { ref, onValue, set, get } from 'firebase/database';
+import { ref, set, get } from 'firebase/database';
 
 const EnchantedRealm = () => {
   const [wallet, setWallet] = useState('');
@@ -10,111 +10,12 @@ const EnchantedRealm = () => {
   const [gameState, setGameState] = useState(null);
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
-  const [loginStep, setLoginStep] = useState('wallet'); // 'wallet' or 'password'
-  const inputRef = useRef(null);
-
-  // Reset login state when component mounts
-  useEffect(() => {
-    setIsLoggedIn(false);
-    setGameState(null);
-    setWallet('');
-    setPassword('');
-    setLoginStep('wallet');
-    setError('');
-    setMessage('');
-    setCommand('');
-  }, []);
-
-  useEffect(() => {
-    if (inputRef.current) {
-      inputRef.current.focus();
-    }
-  }, [loginStep, isLoggedIn]);
-
-  // Load saved game state when logged in
-  useEffect(() => {
-    if (isLoggedIn && wallet) {
-      const gameStateRef = ref(realtimeDb, `gameStates/${wallet}`);
-      const unsubscribe = onValue(gameStateRef, (snapshot) => {
-        const data = snapshot.val();
-        if (data && data.password === password) {
-          const { password: _, ...gameData } = data;
-          setGameState(gameData);
-        }
-      });
-
-      return () => unsubscribe();
-    }
-  }, [isLoggedIn, wallet, password]);
-
-  const handleLogin = async (inputWallet, inputPassword) => {
-    if (!inputWallet || !inputPassword) {
-      setError('Please enter both wallet address and password');
-      return false;
-    }
-
-    try {
-      // Check if there's a saved game state
-      const gameStateRef = ref(realtimeDb, `gameStates/${inputWallet}`);
-      const snapshot = await get(gameStateRef);
-      const savedState = snapshot.val();
-
-      if (savedState) {
-        // Verify password
-        if (savedState.password !== inputPassword) {
-          setError('Incorrect password');
-          return false;
-        }
-        const { password: _, ...gameData } = savedState;
-        setGameState(gameData);
-      } else {
-        // Initialize new game state
-        const newGameState = {
-          level: 1,
-          score: 0,
-          inventory: [],
-          position: { x: 0, y: 0 },
-          health: 100,
-          mana: 100,
-          lastSaved: Date.now(),
-          password: inputPassword
-        };
-        await set(gameStateRef, newGameState);
-        const { password: _, ...gameData } = newGameState;
-        setGameState(gameData);
-      }
-
-      setWallet(inputWallet);
-      setPassword(inputPassword);
-      setIsLoggedIn(true);
-      setError('');
-      setMessage('Game loaded successfully!');
-      return true;
-    } catch (error) {
-      setError('Failed to load game: ' + error.message);
-      return false;
-    }
-  };
-
-  const saveGameState = async () => {
-    try {
-      const gameStateRef = ref(realtimeDb, `gameStates/${wallet}`);
-      await set(gameStateRef, {
-        ...gameState,
-        password,
-        lastSaved: Date.now()
-      });
-      setMessage('Game saved successfully!');
-      setTimeout(() => setMessage(''), 3000);
-    } catch (error) {
-      setError('Failed to save game: ' + error.message);
-    }
-  };
+  const [loginStep, setLoginStep] = useState('wallet');
 
   const handleCommand = async (e) => {
     e.preventDefault();
     const cmd = command.toLowerCase().trim();
-    
+
     if (!isLoggedIn) {
       if (loginStep === 'wallet') {
         if (!cmd) {
@@ -131,19 +32,61 @@ const EnchantedRealm = () => {
           setError('Please enter your password');
           return;
         }
-        const success = await handleLogin(wallet, cmd);
-        if (success) {
-          setLoginStep('wallet');
+
+        try {
+          const gameStateRef = ref(realtimeDb, `gameStates/${wallet}`);
+          const snapshot = await get(gameStateRef);
+          const savedState = snapshot.val();
+
+          if (savedState) {
+            if (savedState.password !== cmd) {
+              setError('Incorrect password');
+              return;
+            }
+            const { password: _, ...gameData } = savedState;
+            setGameState(gameData);
+          } else {
+            const newGameState = {
+              level: 1,
+              score: 0,
+              inventory: [],
+              position: { x: 0, y: 0 },
+              health: 100,
+              mana: 100,
+              lastSaved: Date.now(),
+              password: cmd
+            };
+            await set(gameStateRef, newGameState);
+            const { password: _, ...gameData } = newGameState;
+            setGameState(gameData);
+          }
+
+          setPassword(cmd);
+          setIsLoggedIn(true);
+          setError('');
+          setMessage('Game loaded successfully!');
+          setCommand('');
+        } catch (error) {
+          setError('Failed to load game: ' + error.message);
         }
-        setCommand('');
         return;
       }
     }
 
+    // Handle game commands
     if (cmd.includes('save')) {
-      await saveGameState();
-    } else {
-      // Handle other game commands here
+      try {
+        const gameStateRef = ref(realtimeDb, `gameStates/${wallet}`);
+        await set(gameStateRef, {
+          ...gameState,
+          password,
+          lastSaved: Date.now()
+        });
+        setMessage('Game saved successfully!');
+        setTimeout(() => setMessage(''), 3000);
+      } catch (error) {
+        setError('Failed to save game: ' + error.message);
+      }
     }
     
     setCommand('');
@@ -178,7 +121,6 @@ const EnchantedRealm = () => {
           <form onSubmit={handleCommand}>
             <div className="font-mono text-mine-crystal mb-2">{getPrompt()}</div>
             <input
-              ref={inputRef}
               type={loginStep === 'password' && !isLoggedIn ? 'password' : 'text'}
               value={command}
               onChange={(e) => setCommand(e.target.value)}
@@ -216,25 +158,45 @@ const EnchantedRealm = () => {
             <div className="bg-gray-800 rounded-xl p-6 mb-8">
               <div className="grid grid-cols-3 gap-4 max-w-xs mx-auto">
                 <button
-                  onClick={() => movePlayer('up')}
+                  onClick={() => {
+                    setGameState(prev => ({
+                      ...prev,
+                      position: { ...prev.position, y: prev.position.y - 1 }
+                    }));
+                  }}
                   className="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded col-start-2"
                 >
                   ↑
                 </button>
                 <button
-                  onClick={() => movePlayer('left')}
+                  onClick={() => {
+                    setGameState(prev => ({
+                      ...prev,
+                      position: { ...prev.position, x: prev.position.x - 1 }
+                    }));
+                  }}
                   className="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded"
                 >
                   ←
                 </button>
                 <button
-                  onClick={() => movePlayer('down')}
+                  onClick={() => {
+                    setGameState(prev => ({
+                      ...prev,
+                      position: { ...prev.position, y: prev.position.y + 1 }
+                    }));
+                  }}
                   className="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded"
                 >
                   ↓
                 </button>
                 <button
-                  onClick={() => movePlayer('right')}
+                  onClick={() => {
+                    setGameState(prev => ({
+                      ...prev,
+                      position: { ...prev.position, x: prev.position.x + 1 }
+                    }));
+                  }}
                   className="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded"
                 >
                   →
@@ -252,9 +214,14 @@ const EnchantedRealm = () => {
                   </div>
                 ))}
               </div>
-              {/* Example item collection button */}
               <button
-                onClick={() => collectItem('Potion')}
+                onClick={() => {
+                  setGameState(prev => ({
+                    ...prev,
+                    inventory: [...prev.inventory, 'Potion'],
+                    score: prev.score + 10
+                  }));
+                }}
                 className="mt-4 bg-mine-green/20 hover:bg-mine-green/30 text-mine-crystal px-4 py-2 rounded"
               >
                 Collect Potion
