@@ -1,87 +1,105 @@
 import React, { useState } from 'react';
-import { realtimeDb } from '../firebase';
-import { ref, set, get } from 'firebase/database';
 
 const GameLogin = ({ onLogin }) => {
-  const [wallet, setWallet] = useState('');
-  const [password, setPassword] = useState('');
+  const [formData, setFormData] = useState({
+    wallet: '',
+    password: ''
+  });
   const [error, setError] = useState('');
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!wallet || !password) {
-      setError('Please enter both wallet address and password');
+    setError('');
+
+    const { wallet, password } = formData;
+
+    if (!wallet.trim()) {
+      setError('Please enter a wallet address');
+      return;
+    }
+
+    if (!password || password.length < 6) {
+      setError('Password must be at least 6 characters');
       return;
     }
 
     try {
-      const gameStateRef = ref(realtimeDb, `gameStates/${wallet}`);
-      const snapshot = await get(gameStateRef);
-      const savedState = snapshot.val();
-
-      if (savedState) {
-        if (savedState.password !== password) {
-          setError('Incorrect password');
-          return;
-        }
-        const { password: _, ...gameData } = savedState;
-        onLogin(wallet, password, gameData);
-      } else {
-        const newGameState = {
-          level: 1,
-          score: 0,
-          inventory: [],
-          position: { x: 0, y: 0 },
-          health: 100,
-          mana: 100,
-          lastSaved: Date.now(),
-          password
-        };
-        await set(gameStateRef, newGameState);
-        const { password: _, ...gameData } = newGameState;
-        onLogin(wallet, password, gameData);
-      }
+      await onLogin(wallet.trim(), password);
     } catch (error) {
-      setError('Failed to load game: ' + error.message);
+      console.error('Login error:', error);
+      setError(error.message || 'Failed to login. Please try again.');
     }
   };
 
   return (
-    <div className="bg-gray-800 p-8 rounded-xl shadow-lg w-96 mx-auto">
-      <h2 className="text-2xl font-bold text-mine-crystal mb-6 text-center">Enter The Enchanted Realm</h2>
-      {error && (
-        <div className="bg-red-500/20 text-red-300 p-3 rounded mb-4 text-center">
-          {error}
-        </div>
-      )}
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label className="block text-mine-crystal mb-2">Wallet Address</label>
-          <input
-            type="text"
-            value={wallet}
-            onChange={(e) => setWallet(e.target.value)}
-            placeholder="Enter your wallet address"
-            className="w-full bg-gray-700 rounded px-4 py-2 text-white"
-          />
-        </div>
-        <div>
-          <label className="block text-mine-crystal mb-2">Password</label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="Enter your password"
-            className="w-full bg-gray-700 rounded px-4 py-2 text-white"
-          />
-        </div>
-        <button
-          type="submit"
-          className="w-full bg-mine-green/20 hover:bg-mine-green/30 text-mine-crystal rounded px-4 py-2 transition-colors"
-        >
-          Enter Realm
-        </button>
-      </form>
+    <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+      <div className="bg-black p-8 rounded-lg border-2 border-green-400 w-full max-w-md">
+        <h2 className="text-2xl font-bold text-green-400 text-center mb-6">
+          Crypto Conquerors
+        </h2>
+        
+        {error && (
+          <div className="bg-red-900/50 border border-red-500 text-red-400 p-3 rounded mb-4 text-sm text-center">
+            {error}
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label htmlFor="wallet" className="block text-green-400 text-sm font-medium mb-1">
+              Wallet Address
+            </label>
+            <input
+              id="wallet"
+              name="wallet"
+              type="text"
+              value={formData.wallet}
+              onChange={handleChange}
+              className="w-full p-2 bg-gray-900 text-green-400 border-2 border-green-400 rounded 
+                       focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent
+                       placeholder-green-700"
+              placeholder="Enter your wallet address"
+            />
+          </div>
+
+          <div>
+            <label htmlFor="password" className="block text-green-400 text-sm font-medium mb-1">
+              Password
+            </label>
+            <input
+              id="password"
+              name="password"
+              type="password"
+              value={formData.password}
+              onChange={handleChange}
+              className="w-full p-2 bg-gray-900 text-green-400 border-2 border-green-400 rounded 
+                       focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent
+                       placeholder-green-700"
+              placeholder="Enter password (min 6 characters)"
+            />
+          </div>
+
+          <button
+            type="submit"
+            className="w-full py-2 px-4 bg-green-600 hover:bg-green-700 text-white font-medium 
+                     rounded transition-colors focus:outline-none focus:ring-2 focus:ring-green-500"
+          >
+            Enter Game
+          </button>
+        </form>
+
+        <p className="mt-4 text-sm text-green-600 text-center">
+          New players will be automatically registered
+        </p>
+      </div>
     </div>
   );
 };

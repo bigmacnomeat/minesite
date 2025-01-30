@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import confetti from 'canvas-confetti';
 import LotterySystem from './components/LotterySystem';
 import AlphaCalls from './components/AlphaCalls';
+import EnchantedRealm from './components/EnchantedRealm';
 import { Routes, Route, useNavigate } from 'react-router-dom';
 
 function App() {
@@ -96,7 +97,7 @@ function App() {
     },
     { name: 'Alpha Calls', href: '#alpha-calls' },
     { name: 'Casino', onClick: () => alert('Casino coming in Phase 2!') },
-    { name: 'Enchanted Realm', onClick: () => setMenuOpen(true) }
+    { name: 'Enchanted Realm', onClick: () => setShowEnchantedRealm(true) }
   ];
 
   const navItems = [
@@ -120,6 +121,7 @@ function App() {
       dropdownItems: buyOptions
     },
     { name: 'Alpha Calls', href: '#alpha-calls' },
+    { name: 'Enchanted Realm', onClick: () => setShowEnchantedRealm(true) }
   ];
 
   const ecosystemProjects = [
@@ -770,6 +772,8 @@ function App() {
       status: "active"
     }
   ];
+
+  const [showEnchantedRealm, setShowEnchantedRealm] = useState(false);
 
   return (
     <>  
@@ -1506,72 +1510,24 @@ function App() {
         </div>
       )}
 
-      {/* Game Modal */}
-      {menuOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
-          <div className="bg-indigo-900 border-4 border-indigo-500 rounded-lg p-6 max-w-2xl w-full mx-4 transform scale-100 transition-transform duration-200">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-2xl text-white font-bold pixel-font">Enchanted Realm</h2>
-              <button onClick={() => setMenuOpen(false)} className="text-white hover:text-indigo-200">
+      {/* Enchanted Realm Modal */}
+      {showEnchantedRealm && createPortal(
+        <div className="fixed inset-0 z-50 overflow-y-auto">
+          <div className="fixed inset-0 bg-black/80" onClick={() => setShowEnchantedRealm(false)}></div>
+          <div className="relative min-h-screen flex items-center justify-center p-4">
+            <div className="relative bg-gray-900 rounded-xl shadow-xl w-full max-w-4xl">
+              <button 
+                onClick={() => setShowEnchantedRealm(false)}
+                className="absolute top-4 right-4 text-gray-400 hover:text-white"
+              >
                 ✕
               </button>
-            </div>
-
-            {/* Game Console */}
-            <div id="game-output" className="game-output bg-black border-2 border-indigo-500 rounded-lg p-4 h-96 mb-4 overflow-y-auto text-green-400 font-mono">
-              {commandHistory.map((entry, index) => (
-                <div key={index} className={`${entry.type === 'system' ? 'text-green-400' : 'text-white'} pixel-font`}>
-                  {entry.text}
-                </div>
-              ))}
-            </div>
-
-            {/* Command Input */}
-            <form onSubmit={(e) => {
-              e.preventDefault();
-              handleCommand();
-            }} className="flex gap-2">
-              <input
-                type="text"
-                value={command}
-                onChange={(e) => setCommand(e.target.value)}
-                className="flex-1 bg-indigo-800 text-white px-4 py-2 rounded border-2 border-indigo-500 focus:outline-none focus:border-indigo-400 pixel-font"
-                placeholder="Enter command..."
-              />
-              <button type="submit" className="bg-indigo-600 text-white px-6 py-2 rounded border-2 border-indigo-500 hover:bg-indigo-700 pixel-font">
-                Submit
-              </button>
-            </form>
-
-            {/* Game Stats */}
-            <div className="mt-4 grid grid-cols-2 gap-4">
-              <div className="bg-indigo-800 p-2 rounded border-2 border-indigo-500">
-                <span className="text-indigo-200 font-bold pixel-font">HP:</span>
-                <span className="text-white ml-2 pixel-font">{playerHP}/{totalStats.maxHp}</span>
-              </div>
-              <div className="bg-indigo-800 p-2 rounded border-2 border-indigo-500">
-                <span className="text-indigo-200 font-bold pixel-font">Gold:</span>
-                <span className="text-white ml-2 pixel-font">{playerGold}</span>
-              </div>
-              <div className="bg-indigo-800 p-2 rounded border-2 border-indigo-500">
-                <span className="text-indigo-200 font-bold pixel-font">District:</span>
-                <span className="text-white ml-2 pixel-font">{districtNames[currentDistrictIndex]}</span>
-              </div>
-              <div className="bg-indigo-800 p-2 rounded border-2 border-indigo-500">
-                <span className="text-indigo-200 font-bold pixel-font">Progress:</span>
-                <span className="text-white ml-2 pixel-font">{explorationProgress}%</span>
-              </div>
+              <EnchantedRealm />
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
-
-      {/* Raffle Card */}
-      <RaffleCard
-        title="Multi-Platform Raffles"
-        description="Enter exclusive raffles across our trusted partner platforms. Use $MINE to participate in multiple raffle opportunities!"
-        icon="🎯"
-      />
     </>
   );
 }
@@ -1667,11 +1623,11 @@ const RaffleCard = ({ title, description, icon }) => {
                 href={link.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="block w-full px-4 py-3 text-gray-300 hover:bg-mine-green/20 hover:text-mine-crystal transition-colors first:rounded-t-lg last:rounded-b-lg whitespace-nowrap"
+                className="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-mine-green/20 hover:text-mine-crystal transition-colors first:rounded-t-lg last:rounded-b-lg whitespace-nowrap"
                 onClick={() => setIsOpen(false)}
               >
                 {link.name}
-                <span className="ml-2 text-sm">↗️</span>
+                <span className="text-sm">↗️</span>
               </a>
             ))}
           </div>

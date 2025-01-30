@@ -1,0 +1,28 @@
+{
+  "rules": {
+    ".read": true,
+    ".write": true,
+    "users": {
+      "$address": {
+        ".read": true,
+        ".write": true,
+        "gameData": {
+          ".read": true,
+          ".write": true
+        },
+        "password": {
+          ".read": true,
+          ".write": true
+        }
+      }
+    },
+    "alphaCalls": {
+      ".read": true,
+      ".write": true
+    },
+    "votes": {
+      ".read": true,
+      ".write": true
+    }
+  }
+}

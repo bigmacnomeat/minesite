@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { realtimeDb } from '../firebase';
+import { db } from '../firebase';
 import { ref, onValue, push, update } from 'firebase/database';
 
 const AlphaCalls = () => {
@@ -17,7 +17,7 @@ const AlphaCalls = () => {
 
   // Load and listen to calls from Firebase
   useEffect(() => {
-    const callsRef = ref(realtimeDb, 'alphaCalls');
+    const callsRef = ref(db, 'alphaCalls');
     
     // Set up real-time listener
     const unsubscribe = onValue(callsRef, (snapshot) => {
@@ -61,7 +61,7 @@ const AlphaCalls = () => {
       };
       
       // Add to Firebase
-      const callsRef = ref(realtimeDb, 'alphaCalls');
+      const callsRef = ref(db, 'alphaCalls');
       await push(callsRef, call);
       
       // Reset form
@@ -81,7 +81,7 @@ const AlphaCalls = () => {
 
   const handleVote = async (callId, voteType) => {
     try {
-      const callRef = ref(realtimeDb, `alphaCalls/${callId}`);
+      const callRef = ref(db, `alphaCalls/${callId}`);
       const call = calls.find(c => c.id === callId);
       if (call) {
         const updates = {

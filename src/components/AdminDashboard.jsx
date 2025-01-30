@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { realtimeDb } from '../firebase';
+import { db } from '../firebase';
 import { ref, onValue, set, remove } from 'firebase/database';
 
 const AdminDashboard = () => {
@@ -22,7 +22,7 @@ const AdminDashboard = () => {
     }
 
     // Load votes
-    const votesRef = ref(realtimeDb, 'votes');
+    const votesRef = ref(db, 'votes');
     const unsubscribe = onValue(votesRef, (snapshot) => {
       const data = snapshot.val();
       if (data) {
@@ -63,7 +63,7 @@ const AdminDashboard = () => {
       };
       
       // Add to Firebase
-      const voteRef = ref(realtimeDb, `votes/${Date.now()}`);
+      const voteRef = ref(db, `votes/${Date.now()}`);
       await set(voteRef, vote);
       
       // Reset form
@@ -80,7 +80,7 @@ const AdminDashboard = () => {
 
   const handleDeleteVote = async (voteId) => {
     try {
-      await remove(ref(realtimeDb, `votes/${voteId}`));
+      await remove(ref(db, `votes/${voteId}`));
     } catch (error) {
       setError('Failed to delete vote: ' + error.message);
     }

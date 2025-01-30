@@ -6,10 +6,11 @@ import VotingSystem from './components/VotingSystem';
 import AdminLogin from './components/AdminLogin';
 import AdminDashboard from './components/AdminDashboard';
 import EnchantedRealm from './components/EnchantedRealm';
-import { Routes, Route, useNavigate } from 'react-router-dom';
+import { Routes, Route, useNavigate, Link } from 'react-router-dom';
 
 function App() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [showEnchantedRealm, setShowEnchantedRealm] = useState(false);
   const navigate = useNavigate();
 
   const navItems = [
@@ -26,8 +27,8 @@ function App() {
     { name: 'Roadmap', href: '#roadmap' },
     { name: 'Ecosystem', href: '#ecosystem' },
     { name: 'Lottery', href: '#lottery' },
-    { name: 'Vote', href: '/vote' },
-    { name: 'Enchanted Realm', href: '#enchanted-realm' },
+    { name: 'Vote', to: '/vote', isRoute: true },
+    { name: 'Enchanted Realm', onClick: () => setShowEnchantedRealm(true) },
     { name: 'Buy Now', href: 'https://jup.ag/swap/USDC-GaHu73uhhWrcGLF3CWUi26ZBzv5mZAy8PLrvzoM5XMZh', isExternal: true },
   ];
 
@@ -164,23 +165,51 @@ function App() {
                   <div className="hidden md:block">
                     <div className="flex items-center space-x-8">
                       {navItems.map((item, index) => (
-                        <a
-                          key={item.name}
-                          href={item.href}
-                          target={item.isExternal ? "_blank" : "_self"}
-                          rel={item.isExternal ? "noopener noreferrer" : ""}
-                          className={`px-4 py-2 rounded-md text-lg font-medium transition-all flex items-center space-x-2
-                            ${item.highlight 
-                              ? 'bg-mine-green/20 text-mine-crystal hover:bg-mine-green/30 hover:text-mine-green animate-pulse-glow' 
-                              : 'text-gray-300 hover:text-mine-crystal hover:bg-black/30'}`}
-                          style={{ animationDelay: `${index * 100}ms` }}
-                        >
-                          {item.icon && <span className="animate-pickaxe-swing">{item.icon}</span>}
-                          <span>{item.name}</span>
-                          {item.isExternal && (
-                            <span className="text-sm ml-1">↗️</span>
-                          )}
-                        </a>
+                        item.onClick ? (
+                          <button
+                            key={item.name}
+                            onClick={item.onClick}
+                            className={`px-4 py-2 rounded-md text-lg font-medium transition-all flex items-center space-x-2
+                              ${item.highlight 
+                                ? 'bg-mine-green/20 text-mine-crystal hover:bg-mine-green/30 hover:text-mine-green animate-pulse-glow' 
+                                : 'text-gray-300 hover:text-mine-crystal hover:bg-black/30'}`}
+                            style={{ animationDelay: `${index * 100}ms` }}
+                          >
+                            {item.icon && <span className="animate-pickaxe-swing">{item.icon}</span>}
+                            <span>{item.name}</span>
+                          </button>
+                        ) : item.isRoute ? (
+                          <Link
+                            key={item.name}
+                            to={item.to}
+                            className={`px-4 py-2 rounded-md text-lg font-medium transition-all flex items-center space-x-2
+                              ${item.highlight 
+                                ? 'bg-mine-green/20 text-mine-crystal hover:bg-mine-green/30 hover:text-mine-green animate-pulse-glow' 
+                                : 'text-gray-300 hover:text-mine-crystal hover:bg-black/30'}`}
+                            style={{ animationDelay: `${index * 100}ms` }}
+                          >
+                            {item.icon && <span className="animate-pickaxe-swing">{item.icon}</span>}
+                            <span>{item.name}</span>
+                          </Link>
+                        ) : (
+                          <a
+                            key={item.name}
+                            href={item.href}
+                            target={item.isExternal ? "_blank" : "_self"}
+                            rel={item.isExternal ? "noopener noreferrer" : ""}
+                            className={`px-4 py-2 rounded-md text-lg font-medium transition-all flex items-center space-x-2
+                              ${item.highlight 
+                                ? 'bg-mine-green/20 text-mine-crystal hover:bg-mine-green/30 hover:text-mine-green animate-pulse-glow' 
+                                : 'text-gray-300 hover:text-mine-crystal hover:bg-black/30'}`}
+                            style={{ animationDelay: `${index * 100}ms` }}
+                          >
+                            {item.icon && <span className="animate-pickaxe-swing">{item.icon}</span>}
+                            <span>{item.name}</span>
+                            {item.isExternal && (
+                              <span className="text-sm ml-1">↗️</span>
+                            )}
+                          </a>
+                        )
                       ))}
                       <button onClick={() => window.open('https://enchantedminers.xyz/', '_blank')} className="px-4 py-2 rounded-md text-base font-medium flex items-center space-x-2 text-gray-300 hover:text-mine-crystal hover:bg-black/30">
                         Casino
@@ -206,23 +235,51 @@ function App() {
                 <div className="md:hidden">
                   <div className="px-2 pt-2 pb-3 space-y-1">
                     {navItems.map((item) => (
-                      <a
-                        key={item.name}
-                        href={item.href}
-                        target={item.isExternal ? "_blank" : "_self"}
-                        rel={item.isExternal ? "noopener noreferrer" : ""}
-                        className={`block px-4 py-2 rounded-md text-base font-medium flex items-center space-x-2
-                          ${item.highlight 
-                            ? 'bg-mine-green/20 text-mine-crystal hover:bg-mine-green/30 hover:text-mine-green' 
-                            : 'text-gray-300 hover:text-mine-crystal hover:bg-black/30'}`}
-                        onClick={() => setMenuOpen(false)}
-                      >
-                        {item.icon && <span>{item.icon}</span>}
-                        <span>{item.name}</span>
-                        {item.isExternal && (
-                          <span className="text-sm ml-1">↗️</span>
-                        )}
-                      </a>
+                      item.onClick ? (
+                        <button
+                          key={item.name}
+                          onClick={item.onClick}
+                          className={`block px-4 py-2 rounded-md text-base font-medium flex items-center space-x-2
+                            ${item.highlight 
+                              ? 'bg-mine-green/20 text-mine-crystal hover:bg-mine-green/30 hover:text-mine-green' 
+                              : 'text-gray-300 hover:text-mine-crystal hover:bg-black/30'}`}
+                          onClick={() => setMenuOpen(false)}
+                        >
+                          {item.icon && <span>{item.icon}</span>}
+                          <span>{item.name}</span>
+                        </button>
+                      ) : item.isRoute ? (
+                        <Link
+                          key={item.name}
+                          to={item.to}
+                          className={`block px-4 py-2 rounded-md text-base font-medium flex items-center space-x-2
+                            ${item.highlight 
+                              ? 'bg-mine-green/20 text-mine-crystal hover:bg-mine-green/30 hover:text-mine-green' 
+                              : 'text-gray-300 hover:text-mine-crystal hover:bg-black/30'}`}
+                          onClick={() => setMenuOpen(false)}
+                        >
+                          {item.icon && <span>{item.icon}</span>}
+                          <span>{item.name}</span>
+                        </Link>
+                      ) : (
+                        <a
+                          key={item.name}
+                          href={item.href}
+                          target={item.isExternal ? "_blank" : "_self"}
+                          rel={item.isExternal ? "noopener noreferrer" : ""}
+                          className={`block px-4 py-2 rounded-md text-base font-medium flex items-center space-x-2
+                            ${item.highlight 
+                              ? 'bg-mine-green/20 text-mine-crystal hover:bg-mine-green/30 hover:text-mine-green' 
+                              : 'text-gray-300 hover:text-mine-crystal hover:bg-black/30'}`}
+                          onClick={() => setMenuOpen(false)}
+                        >
+                          {item.icon && <span>{item.icon}</span>}
+                          <span>{item.name}</span>
+                          {item.isExternal && (
+                            <span className="text-sm ml-1">↗️</span>
+                          )}
+                        </a>
+                      )
                     ))}
                     <button onClick={() => window.open('https://enchantedminers.xyz/', '_blank')} className="px-4 py-2 rounded-md text-base font-medium flex items-center space-x-2 text-gray-300 hover:text-mine-crystal hover:bg-black/30">
                       Casino
@@ -502,14 +559,6 @@ function App() {
               </div>
             </section>
 
-            {/* Enchanted Realm Section */}
-            <section id="enchanted-realm" className="py-32 w-full bg-gray-900">
-              <div className="container mx-auto px-4">
-                <h2 className="text-4xl font-bold text-center mb-12">The Enchanted Realm</h2>
-                <EnchantedRealm />
-              </div>
-            </section>
-
             {/* Buy Now Section */}
             <section id="buy" className="py-32 w-full">
               <div className="max-w-7xl mx-auto px-4 sm:px-6">
@@ -549,6 +598,25 @@ function App() {
         <Route path="/admin" element={<AdminLogin />} />
         <Route path="/admin/dashboard" element={<AdminDashboard />} />
       </Routes>
+
+      {/* Enchanted Realm Modal */}
+      {showEnchantedRealm && createPortal(
+        <div className="fixed inset-0 z-50 overflow-y-auto">
+          <div className="fixed inset-0 bg-black/80" onClick={() => setShowEnchantedRealm(false)}></div>
+          <div className="relative min-h-screen flex items-center justify-center p-4">
+            <div className="relative bg-gray-900 rounded-xl shadow-xl w-full max-w-4xl">
+              <button 
+                onClick={() => setShowEnchantedRealm(false)}
+                className="absolute top-4 right-4 text-gray-400 hover:text-white"
+              >
+                ✕
+              </button>
+              <EnchantedRealm />
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
     </>
   );
 }

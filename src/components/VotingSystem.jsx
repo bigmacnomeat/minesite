@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { realtimeDb } from '../firebase';
+import { db } from '../firebase';
 import { ref, onValue, set, get } from 'firebase/database';
 
 const VotingSystem = () => {
@@ -10,7 +10,7 @@ const VotingSystem = () => {
 
   // Load and listen to votes from Firebase
   useEffect(() => {
-    const votesRef = ref(realtimeDb, 'votes');
+    const votesRef = ref(db, 'votes');
     
     const unsubscribe = onValue(votesRef, (snapshot) => {
       const data = snapshot.val();
@@ -39,7 +39,7 @@ const VotingSystem = () => {
       }
 
       // Check if wallet has already voted
-      const voteRef = ref(realtimeDb, `votes/${voteId}/votes`);
+      const voteRef = ref(db, `votes/${voteId}/votes`);
       const snapshot = await get(voteRef);
       const voteData = snapshot.val() || { yes: {}, no: {} };
       
@@ -51,7 +51,7 @@ const VotingSystem = () => {
       }
 
       // Add the vote
-      await set(ref(realtimeDb, `votes/${voteId}/votes/${choice}/${userWallet}`), true);
+      await set(ref(db, `votes/${voteId}/votes/${choice}/${userWallet}`), true);
       setError('');
     } catch (error) {
       setError('Failed to cast vote: ' + error.message);

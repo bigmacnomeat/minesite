@@ -10,11 +10,14 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
     "@fontsource/comic-neue": "^5.1.1",
     "@heroicons/react": "^2.2.0",
     "autoprefixer": "^10.4.20",
     "canvas-confetti": "^1.9.3",
     "discord.js": "^14.17.3",
+    "ethers": "^6.13.5",
     "firebase": "^11.2.0",
     "framer-motion": "^11.17.0",
     "postcss": "^8.5.0",
