@@ -2,7 +2,6 @@ import React, { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import confetti from 'canvas-confetti';
 import LotterySystem from './components/LotterySystem';
-import AlphaCalls from './components/AlphaCalls';
 import EnchantedRealm from './components/EnchantedRealm';
 import { Routes, Route, useNavigate } from 'react-router-dom';
 
