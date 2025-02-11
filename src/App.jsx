@@ -121,6 +121,35 @@ function App() {
     },
     { name: 'Alpha Calls', href: '#alpha-calls' },
     { name: 'Enchanted Realm', onClick: () => setShowEnchantedRealm(true) }
+    const navItems = [
+    { name: 'Home', href: '#home' },
+    { name: 'About', href: '#about' },
+    { 
+      name: 'Stake', 
+      href: 'https://staking.mine-token.com', 
+      isExternal: true,
+      icon: '⛏️',
+      highlight: true 
+    },
+    { 
+      name: 'Staking', 
+      href: 'https://www.traitstore.app/enchantedminers', 
+      isExternal: true 
+    },
+    { name: 'Tokenomics', href: '#tokenomics' },
+    { name: 'Roadmap', href: '#roadmap' },
+    { name: 'Ecosystem', href: '#ecosystem' },
+    { name: 'Voting', href: '#voting' },
+    { name: 'Lottery', href: '#lottery' },
+    { 
+      name: 'Buy Now',
+      isDropdown: true,
+      dropdownItems: buyOptions
+    },
+    { name: 'Alpha Calls', href: '#alpha-calls' },
+    { name: 'Enchanted Realm', onClick: () => setShowEnchantedRealm(true) }
+];
+
   ];
 
   const ecosystemProjects = [
