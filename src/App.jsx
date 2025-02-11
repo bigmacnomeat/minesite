@@ -111,10 +111,9 @@ function App() {
       isDropdown: true,
       dropdownItems: stakingOptions
     },
-    { name: 'Trait Store', href: 'https://www.traitstore.app', isExternal: true },
+    { name: 'Trait Store', href: 'https://www.traitstore.app/enchantedminers', isExternal: true },
     { name: 'Tokenomics', href: '#tokenomics' },
     { name: 'Roadmap', href: '#roadmap' },
-    { name: 'Ecosystem', href: '#ecosystem' },
     { name: 'Voting', href: '#voting' },
     { name: 'Lottery', href: '#lottery' },
     { 
@@ -1740,4 +1739,3 @@ const EcosystemCard = ({ name, description, logo, link, partnerType }) => {
 };
 
 export default App;
-
