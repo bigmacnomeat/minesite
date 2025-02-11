@@ -61,7 +61,6 @@ function App() {
   ];
 
   const stakingOptions = [
-    { name: 'Stake', href: 'https://staking.mine-token.com', isExternal: true },
     { name: 'NFT Staking', href: 'https://www.nftstake.app/enchantedminers', isExternal: true },
     { name: 'Token Staking', onClick: () => alert('Token Staking coming soon!') }
   ];
