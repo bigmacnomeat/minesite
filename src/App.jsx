@@ -1570,6 +1570,14 @@ const RaffleCard = ({ title, description, icon }) => {
     {
       name: "Mutants Raffles",
       url: "https://mutantsonsolanacrew.com/communities/EMINE"
+    },
+    {
+      name: "Puffsterz Raffles",
+      url: "https://www.puffsterzpad.io/raffles"
+    },
+    {
+      name: "Stoned Ape Raffles",
+      url: "https://monet.community/"
     }
   ];
 
