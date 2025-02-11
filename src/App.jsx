@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import confetti from 'canvas-confetti';
 import LotterySystem from './components/LotterySystem';
 import EnchantedRealm from './components/EnchantedRealm';
+import AlphaCalls from './components/AlphaCalls';
 import { Routes, Route, useNavigate } from 'react-router-dom';
 
 function App() {
