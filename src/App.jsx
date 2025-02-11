@@ -44,6 +44,7 @@ function App() {
   };
 
   const [stakingDropdown, setStakingDropdown] = useState(false);
+  const stakingDropdownRef = useRef(null);
 
   const [buyDropdownOpen, setBuyDropdownOpen] = useState(false);
   const buyDropdownRef = useRef(null);
@@ -59,10 +60,25 @@ function App() {
     }
   ];
 
+  const stakingOptions = [
+    {
+      name: "NFT Staking",
+      href: 'https://www.nftstake.app/enchantedminers',
+      isExternal: true 
+    },
+    {
+      name: "Token Staking",
+      onClick: () => alert('Token Staking coming soon!')
+    }
+  ];
+
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (buyDropdownRef.current && !buyDropdownRef.current.contains(event.target)) {
         setBuyDropdownOpen(false);
+      }
+      if (stakingDropdownRef.current && !stakingDropdownRef.current.contains(event.target)) {
+        setStakingDropdown(false);
       }
     };
 
@@ -81,14 +97,7 @@ function App() {
     { 
       name: 'Staking',
       isDropdown: true,
-      dropdownItems: [
-        { name: 'Token Staking', onClick: () => alert('Token Staking coming soon!') },
-        { 
-          name: 'NFT Staking', 
-          href: 'https://www.nftstake.app/enchantedminers',
-          isExternal: true 
-        }
-      ]
+      dropdownItems: stakingOptions
     },
     { 
       name: 'Buy Now',
@@ -918,7 +927,7 @@ function App() {
                               )}
                             </div>
                           ) : item.isDropdown ? (
-                            <div className="relative">
+                            <div className="relative" ref={stakingDropdownRef}>
                               <button
                                 onClick={() => setStakingDropdown(!stakingDropdown)}
                                 className="px-4 py-2 rounded-md text-lg font-medium flex items-center space-x-2 text-gray-300 hover:text-mine-crystal hover:bg-black/30"
@@ -934,7 +943,7 @@ function App() {
                                 </svg>
                               </button>
                               {stakingDropdown && (
-                                <div className="absolute z-50 mt-2 w-48 rounded-md shadow-lg bg-gray-800 ring-1 ring-black ring-opacity-5">
+                                <div className="absolute left-0 mt-2 w-48 rounded-md shadow-lg bg-gray-800 ring-1 ring-black ring-opacity-5 z-50">
                                   <div className="py-1" role="menu" aria-orientation="vertical">
                                     {item.dropdownItems.map((dropdownItem) => (
                                       dropdownItem.href ? (
