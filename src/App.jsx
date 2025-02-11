@@ -94,10 +94,16 @@ function App() {
       isDropdown: true,
       dropdownItems: buyOptions
     },
+    { 
+      name: 'Trait Store', 
+      href: 'https://your-trait-store-link.com',  // Replace with the actual link
+      isExternal: true
+    },
     { name: 'Alpha Calls', href: '#alpha-calls' },
     { name: 'Casino', onClick: () => alert('Casino coming in Phase 2!') },
     { name: 'Enchanted Realm', onClick: () => setShowEnchantedRealm(true) }
   ];
+
 
   const navItems = [
     { name: 'Home', href: '#home' },
