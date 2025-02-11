@@ -2,9 +2,9 @@ import React, { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import confetti from 'canvas-confetti';
 import LotterySystem from './components/LotterySystem';
-import AlphaCalls from './components/AlphaCalls';
 import EnchantedRealm from './components/EnchantedRealm';
 import { Routes, Route, useNavigate } from 'react-router-dom';
+
 function App() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [command, setCommand] = useState('');
@@ -94,18 +94,12 @@ function App() {
       isDropdown: true,
       dropdownItems: buyOptions
     },
-    { 
-      name: 'Trait Store', 
-      href: 'https://your-trait-store-link.com',  // Replace with the actual link
-      isExternal: true
-    },
     { name: 'Alpha Calls', href: '#alpha-calls' },
     { name: 'Casino', onClick: () => alert('Casino coming in Phase 2!') },
     { name: 'Enchanted Realm', onClick: () => setShowEnchantedRealm(true) }
   ];
 
-
- const navItems = [
+  const navItems = [
     { name: 'Home', href: '#home' },
     { name: 'About', href: '#about' },
     { 
@@ -120,6 +114,7 @@ function App() {
       href: 'https://www.traitstore.app/enchantedminers', 
       isExternal: true 
     },
+    { name: 'Trait Store', href: 'https://www.traitstore.app', isExternal: true },
     { name: 'Tokenomics', href: '#tokenomics' },
     { name: 'Roadmap', href: '#roadmap' },
     { name: 'Ecosystem', href: '#ecosystem' },
@@ -132,8 +127,6 @@ function App() {
     },
     { name: 'Alpha Calls', href: '#alpha-calls' },
     { name: 'Enchanted Realm', onClick: () => setShowEnchantedRealm(true) }
-]; // Ensure this closing bracket is present
-
   ];
 
   const ecosystemProjects = [
@@ -286,11 +279,7 @@ function App() {
     ],
     "Basic District": [
         { npc: "Dax", progress: 0 },
-        { npc: "DJ", progress: 10 },
-        { npc: "Captain Doc", progress: 20 },
-        { npc: "Rig", progress: 30 },
-        { npc: "EJC", progress: 40 },
-        { npc: "Tom", progress: 50 }
+        { npc: "DJ", progress: 10 }
     ]
   };
 
@@ -888,7 +877,7 @@ function App() {
                   {/* Desktop Navigation */}
                   <div className="hidden md:block">
                     <div className="flex items-center space-x-8">
-                      {navigationItems.map((item, index) => (
+                      {navItems.map((item, index) => (
                         <React.Fragment key={item.name}>
                           {item.isDropdown && item.dropdownItems === buyOptions ? (
                             <div className="relative" ref={buyDropdownRef}>
@@ -1018,7 +1007,7 @@ function App() {
               {menuOpen && (
                 <div className="md:hidden">
                   <div className="px-2 pt-2 pb-3 space-y-1">
-                    {navigationItems.map((item) => (
+                    {navItems.map((item) => (
                       <React.Fragment key={item.name}>
                         {item.isDropdown && item.dropdownItems === buyOptions ? (
                           <div className="relative" ref={buyDropdownRef}>
@@ -1583,14 +1572,6 @@ const RaffleCard = ({ title, description, icon }) => {
     {
       name: "Mutants Raffles",
       url: "https://mutantsonsolanacrew.com/communities/EMINE"
-    },
-    {
-      name: "Puffsterz Raffles",
-      url: "https://www.puffsterzpad.io/raffles"
-    },
-    {
-      name: "Stoned Ape Raffles",
-      url: "https://monet.community/"
     }
   ];
 
