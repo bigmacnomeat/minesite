@@ -61,15 +61,9 @@ function App() {
   ];
 
   const stakingOptions = [
-    {
-      name: "NFT Staking",
-      href: 'https://www.nftstake.app/enchantedminers',
-      isExternal: true 
-    },
-    {
-      name: "Token Staking",
-      onClick: () => alert('Token Staking coming soon!')
-    }
+    { name: 'Stake', href: 'https://staking.mine-token.com', isExternal: true },
+    { name: 'NFT Staking', href: 'https://www.nftstake.app/enchantedminers', isExternal: true },
+    { name: 'Token Staking', onClick: () => alert('Token Staking coming soon!') }
   ];
 
   useEffect(() => {
@@ -113,16 +107,9 @@ function App() {
     { name: 'Home', href: '#home' },
     { name: 'About', href: '#about' },
     { 
-      name: 'Stake', 
-      href: 'https://staking.mine-token.com', 
-      isExternal: true,
-      icon: '⛏️',
-      highlight: true 
-    },
-    { 
-      name: 'Staking', 
-      href: 'https://www.traitstore.app/enchantedminers', 
-      isExternal: true 
+      name: 'Staking',
+      isDropdown: true,
+      dropdownItems: stakingOptions
     },
     { name: 'Trait Store', href: 'https://www.traitstore.app', isExternal: true },
     { name: 'Tokenomics', href: '#tokenomics' },
@@ -1753,3 +1740,4 @@ const EcosystemCard = ({ name, description, logo, link, partnerType }) => {
 };
 
 export default App;
+
