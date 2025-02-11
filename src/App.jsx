@@ -1,4 +1,4 @@
-     mport React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import confetti from 'canvas-confetti';
 import LotterySystem from './components/LotterySystem';
