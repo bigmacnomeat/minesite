@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+     mport React, { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import confetti from 'canvas-confetti';
 import LotterySystem from './components/LotterySystem';
@@ -1118,7 +1118,7 @@ function App() {
                       <button onClick={() => window.open('https://jup.ag/swap/USDC-GaHu73uhhWrcGLF3CWUi26ZBzv5mZAy8PLrvzoM5XMZh', '_blank')} className="px-12 py-4 bg-mine-green hover:bg-mine-green-dark rounded-full text-xl font-semibold transition-all transform hover:scale-105 animate-bounce-subtle">
                         Buy Now
                       </button>
-                      <button onClick={() => window.open('https://discord.gg/xptqZ2kp', '_blank')} className="px-12 py-4 bg-black/50 hover:bg-black/70 rounded-full text-xl font-semibold transition-all border-2 border-mine-green transform hover:scale-105 animate-pulse-glow">
+                      <button onClick={() => window.open('https://discord.gg/JeawRUKBfa', '_blank')} className="px-12 py-4 bg-black/50 hover:bg-black/70 rounded-full text-xl font-semibold transition-all border-2 border-mine-green transform hover:scale-105 animate-pulse-glow">
                         Join Community
                       </button>
                     </div>
@@ -1747,4 +1747,3 @@ const EcosystemCard = ({ name, description, logo, link, partnerType }) => {
 };
 
 export default App;
-                               
