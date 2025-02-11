@@ -31,6 +31,25 @@ function App() {
     { name: 'Enchanted Realm', onClick: () => setShowEnchantedRealm(true) },
     { name: 'Buy Now', href: 'https://jup.ag/swap/USDC-GaHu73uhhWrcGLF3CWUi26ZBzv5mZAy8PLrvzoM5XMZh', isExternal: true },
   ];
+const navLinks = [
+    { name: "Home", url: "/" },
+    { name: "About", url: "#about" },
+    { 
+      name: "Stake", 
+      url: "https://staking.mine-token.com", 
+      isExternal: true,
+      icon: "⛏️",
+      highlight: true 
+    },
+    { name: "Tokenomics", url: "#tokenomics" },
+    { name: "Roadmap", url: "#roadmap" },
+    { name: "Ecosystem", url: "#ecosystem" },
+    { name: "Lottery", url: "#lottery" },
+    { name: "Trait Store", url: "https://www.traitstore.app/enchantedminers" },
+    { name: "Vote", url: "/vote", isRoute: true },
+    { name: "Enchanted Realm", onClick: () => setShowEnchantedRealm(true) },
+    { name: "Buy Now", url: "https://jup.ag/swap/USDC-GaHu73uhhWrcGLF3CWUi26ZBzv5mZAy8PLrvzoM5XMZh", isExternal: true }
+  ];
 
   const ecosystemProjects = [
     {
