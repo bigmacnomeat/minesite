@@ -1568,6 +1568,14 @@ const RaffleCard = ({ title, description, icon }) => {
     {
       name: "Mutants Raffles",
       url: "https://mutantsonsolanacrew.com/communities/EMINE"
+    },
+    {
+      name: "Monet",
+      url: "https://monet.community/"
+    },
+    {
+      name: "Puffsterz",
+      url: "https://www.puffsterzpad.io/raffles"
     }
   ];
 
@@ -1739,3 +1747,4 @@ const EcosystemCard = ({ name, description, logo, link, partnerType }) => {
 };
 
 export default App;
+                               
