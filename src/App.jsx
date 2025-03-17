@@ -86,7 +86,6 @@ function App() {
     { name: 'Tokenomics', href: '#tokenomics' },
     { name: 'Roadmap', href: '#roadmap' },
     { name: 'Vote', href: '#voting' },
-    { name: 'Lottery', href: '#lottery' },
     { 
       name: 'Staking',
       isDropdown: true,
@@ -97,31 +96,36 @@ function App() {
       isDropdown: true,
       dropdownItems: buyOptions
     },
-    { name: 'Alpha Calls', href: '#alpha-calls' },
     { name: 'Casino', onClick: () => alert('Casino coming in Phase 2!') },
-    { name: 'Enchanted Realm', onClick: () => setShowEnchantedRealm(true) }
+    { name: 'Enchanted Realm', onClick: () => setShowEnchantedRealm(true) },
+    { name: 'Newsletter', href: 'https://newsletter-delta-seven.vercel.app/', target: '_blank' },
+    { name: 'Raffles', href: '#about' },
+    { name: 'Trait Store', href: 'https://www.traitstore.app/enchantedminers', isExternal: true },
+    { name: 'Tokenomics', href: '#tokenomics' },
+    { name: 'Voting', href: '#voting' },
+    { name: 'Enchanted Realm', onClick: () => setShowEnchantedRealm(true) },
   ];
 
   const navItems = [
     { name: 'Home', href: '#home' },
     { name: 'About', href: '#about' },
     { 
-      name: 'Staking',
-      isDropdown: true,
-      dropdownItems: stakingOptions
-    },
-    { name: 'Trait Store', href: 'https://www.traitstore.app/enchantedminers', isExternal: true },
-    { name: 'Tokenomics', href: '#tokenomics' },
-    { name: 'Roadmap', href: '#roadmap' },
-    { name: 'Voting', href: '#voting' },
-    { name: 'Lottery', href: '#lottery' },
-    { 
       name: 'Buy Now',
       isDropdown: true,
       dropdownItems: buyOptions
     },
-    { name: 'Alpha Calls', href: '#alpha-calls' },
-    { name: 'Enchanted Realm', onClick: () => setShowEnchantedRealm(true) }
+    { name: 'MINE VEGAS', href: 'https://mine-plateform.vercel.app/', target: '_blank' },
+    { 
+      name: 'Staking',
+      isDropdown: true,
+      dropdownItems: stakingOptions
+    },
+    { name: 'Newsletter', href: 'https://newsletter-delta-seven.vercel.app/', target: '_blank' },
+    { name: 'Raffles', href: '#about' },
+    { name: 'Trait Store', href: 'https://www.traitstore.app/enchantedminers', isExternal: true },
+    { name: 'Tokenomics', href: '#tokenomics' },
+    { name: 'Voting', href: '#voting' },
+    { name: 'Enchanted Realm', onClick: () => setShowEnchantedRealm(true) },
   ];
 
   const ecosystemProjects = [
@@ -970,12 +974,12 @@ function App() {
                           ) : (
                             <a
                               href={item.href}
-                              target={item.isExternal ? "_blank" : undefined}
-                              rel={item.isExternal ? "noopener noreferrer" : undefined}
+                              target={item.target || '_self'}
+                              rel={item.target === '_blank' ? "noopener noreferrer" : undefined}
                               className="px-4 py-2 rounded-md text-lg font-medium flex items-center space-x-2 text-gray-300 hover:text-mine-crystal hover:bg-black/30"
                             >
                               {item.name}
-                              {item.isExternal && (
+                              {item.target === '_blank' && (
                                 <span className="text-sm">↗️</span>
                               )}
                             </a>
@@ -1084,12 +1088,12 @@ function App() {
                         ) : (
                           <a
                             href={item.href}
-                            target={item.isExternal ? "_blank" : undefined}
-                            rel={item.isExternal ? "noopener noreferrer" : undefined}
+                            target={item.target || '_self'}
+                            rel={item.target === '_blank' ? "noopener noreferrer" : undefined}
                             className="block w-full text-left px-4 py-2 text-base font-medium text-gray-300 hover:text-mine-crystal hover:bg-black/30"
                           >
                             {item.name}
-                            {item.isExternal && (
+                            {item.target === '_blank' && (
                               <span className="text-sm">↗️</span>
                             )}
                           </a>
@@ -1141,7 +1145,7 @@ function App() {
                     title="Casino & Gaming"
                     description="Enter our magical casino realm at Enchanted Miners. Play, bet, and win with $MINE tokens across multiple games and events."
                     icon="🎰"
-                    link="https://enchantedminers.xyz/"
+                    link="https://mine-plateform.vercel.app/"
                   />
                   <FeatureCard
                     title="Weekly Events"
@@ -1377,11 +1381,6 @@ function App() {
               </div>
             </section>
 
-            {/* Alpha Calls Section */}
-            <section id="alpha-calls" className="py-24 w-full bg-gradient-to-b from-black to-gray-900">
-              <AlphaCalls />
-            </section>
-
             {/* Voting Section */}
             <section id="voting" className="py-24 w-full bg-gradient-to-b from-gray-900 to-black">
               <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -1402,14 +1401,6 @@ function App() {
                     </svg>
                   </button>
                 </div>
-              </div>
-            </section>
-
-            {/* Lottery Section */}
-            <section id="lottery" className="py-32 w-full bg-black/30">
-              <div className="container mx-auto px-4">
-                <h2 className="text-4xl font-bold text-center mb-12">Weekly Lottery</h2>
-                <LotterySystem />
               </div>
             </section>
 
@@ -1657,7 +1648,7 @@ const TokenomicCard = ({ title, value, description }) => {
         </div>
         <div className="ml-4">
           <h3 className="text-2xl font-bold text-mine-crystal animate-crystal-shine">{title}</h3>
-          <span className={`text-sm uppercase`}>{description}</span>
+          <span className={`text-sm uppercase text-gray-300`}>{description}</span>
         </div>
       </div>
       

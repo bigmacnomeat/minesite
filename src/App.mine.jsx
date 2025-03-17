@@ -230,7 +230,7 @@ const navLinks = [
                           </a>
                         )
                       ))}
-                      <button onClick={() => window.open('https://enchantedminers.xyz/', '_blank')} className="px-4 py-2 rounded-md text-base font-medium flex items-center space-x-2 text-gray-300 hover:text-mine-crystal hover:bg-black/30">
+                      <button onClick={() => window.open('https://mine-plateform.vercel.app/', '_blank')} className="px-4 py-2 rounded-md text-base font-medium flex items-center space-x-2 text-gray-300 hover:text-mine-crystal hover:bg-black/30">
                         Casino
                       </button>
                     </div>
@@ -300,7 +300,7 @@ const navLinks = [
                         </a>
                       )
                     ))}
-                    <button onClick={() => window.open('https://enchantedminers.xyz/', '_blank')} className="px-4 py-2 rounded-md text-base font-medium flex items-center space-x-2 text-gray-300 hover:text-mine-crystal hover:bg-black/30">
+                    <button onClick={() => window.open('https://mine-plateform.vercel.app/', '_blank')} className="px-4 py-2 rounded-md text-base font-medium flex items-center space-x-2 text-gray-300 hover:text-mine-crystal hover:bg-black/30">
                       Casino
                     </button>
                   </div>
@@ -348,7 +348,7 @@ const navLinks = [
                     title="Casino & Gaming"
                     description="Enter our magical casino realm at Enchanted Miners. Play, bet, and win with $MINE tokens across multiple games and events."
                     icon="🎰"
-                    link="https://enchantedminers.xyz/"
+                    link="https://mine-plateform.vercel.app/"
                   />
                   <FeatureCard
                     title="Weekly Events"

@@ -1656,7 +1656,8 @@ const EnchantedRealm = () => {
         '- trades: View your pending trades',
         '- accept <ID>: Accept a trade',
         '- decline <ID>: Decline a trade',
-        '- search_player <name>: Search for a player by name'
+        '- stats: View your stats',
+        '- inventory: View your items'
       ]);
       
       setAwaitingTradeType(true);
@@ -2471,6 +2472,10 @@ const EnchantedRealm = () => {
                 <p>Gold: {playerData.gold}</p>
                 <p>Attack: {playerData.attack}</p>
                 <p>Defense: {playerData.defense}</p>
+              </div>
+              <div className="action-buttons mt-4">
+                <button onClick={() => handleCommand('run')} className="mr-2 px-4 py-2 bg-blue-500 text-white rounded">Run</button>
+                <button onClick={() => handleCommand('attack')} className="px-4 py-2 bg-red-500 text-white rounded">Attack</button>
               </div>
             </div>
           )}
